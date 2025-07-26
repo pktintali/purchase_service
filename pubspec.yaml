@@ -1,0 +1,27 @@
+name: purchase_service
+description: A comprehensive Flutter package for handling RevenueCat in-app purchases and subscriptions with real-time status tracking and paywall integration.
+version: 1.0.0
+
+topics:
+  - in-app-purchase
+  - revenue-cat
+  - subscriptions
+  - flutter
+  - monetization
+
+environment:
+  sdk: ^3.7.0
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  purchases_flutter: ^8.9.0
+  purchases_ui_flutter: ^8.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
