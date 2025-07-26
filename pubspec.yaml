@@ -1,6 +1,10 @@
 name: purchase_service
 description: A comprehensive Flutter package for handling RevenueCat in-app purchases and subscriptions with real-time status tracking and paywall integration.
 version: 1.0.0
+homepage: https://github.com/pktintali/purchase_service
+repository: https://github.com/pktintali/purchase_service
+issue_tracker: https://github.com/pktintali/purchase_service/issues
+documentation: https://github.com/pktintali/purchase_service/blob/main/README.md
 
 topics:
   - in-app-purchase
