@@ -19,21 +19,50 @@ This example demonstrates how to use the Purchase Service package in a Flutter a
 
    - Create an account at [revenuecat.com](https://www.revenuecat.com/)
    - Create a new app in the RevenueCat dashboard
-   - Get your API key from the dashboard
+   - Get separate API keys for iOS and Android from the dashboard
 
-2. **Configure Products**
+2. **Environment Configuration**
+
+   - Add `flutter_dotenv: ^5.1.0` to your `pubspec.yaml`
+   - Create a `.env` file in your project root:
+
+   ```env
+   REVENUECAT_IOS_KEY=your_ios_api_key_here
+   REVENUECAT_ANDROID_KEY=your_android_api_key_here
+   ```
+
+   - Add `.env` to your `.gitignore` file
+
+3. **Configure Products**
 
    - Add your app to Apple App Store Connect / Google Play Console
    - Create in-app purchase products
    - Configure the products in RevenueCat dashboard
    - Create an entitlement called "pro"
 
-3. **Update the Code**
+4. **Update the Code**
 
-   - Replace `YOUR_REVENUECAT_API_KEY_HERE` with your actual API key
-   - Make sure your entitlement ID matches what you configured ("pro" by default)
+   - Use platform-specific API keys with `Platform.isIOS`
+   - Load environment variables in `main()`:
 
-4. **Test with Sandbox**
+   ```dart
+   await dotenv.load(fileName: ".env");
+   ```
+
+   - Initialize with correct pattern:
+
+   ```dart
+   final purchasesApiKey = Platform.isIOS
+       ? dotenv.env['REVENUECAT_IOS_KEY'] ?? ''
+       : dotenv.env['REVENUECAT_ANDROID_KEY'] ?? '';
+
+   await purchasesService.initialize(
+     apiKey: purchasesApiKey,
+     observerMode: false, // Set to true for testing
+   );
+   ```
+
+5. **Test with Sandbox**
    - Use test accounts (Apple ID test accounts / Google Play test accounts)
    - Test in sandbox environment before going live
 
@@ -41,8 +70,10 @@ This example demonstrates how to use the Purchase Service package in a Flutter a
 
 1. Make sure you have Flutter installed
 2. Clone or download this example
-3. Update the API key in `main.dart`
-4. Run the app:
+3. Add `flutter_dotenv: ^5.1.0` to your `pubspec.yaml`
+4. Create a `.env` file with your RevenueCat API keys
+5. Update the code to load environment variables and use platform-specific keys
+6. Run the app:
 
 ```bash
 flutter run
@@ -84,15 +115,22 @@ flutter run
 
 1. **API Key Issues**
 
-   - Make sure you're using the correct API key
-   - Check that the key matches your app configuration
+   - Make sure you're using platform-specific API keys (separate for iOS and Android)
+   - Check that the keys match your app configuration in RevenueCat dashboard
+   - Verify your `.env` file is properly loaded and not committed to git
 
-2. **Entitlement Not Found**
+2. **Environment Variable Issues**
+
+   - Ensure `flutter_dotenv` is added to your `pubspec.yaml`
+   - Check that `.env` file is in the project root
+   - Verify environment variables are loaded before service initialization
+
+3. **Entitlement Not Found**
 
    - Verify your entitlement ID in RevenueCat dashboard
-   - Make sure products are properly configured
+   - Make sure products are properly configured for both iOS and Android
 
-3. **Sandbox Issues**
+4. **Sandbox Issues**
    - Use test accounts for sandbox testing
    - Clear app data if testing gets stuck
 

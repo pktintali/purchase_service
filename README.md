@@ -1,20 +1,37 @@
 # Purchase Service
 
-A comprehensive Flutter package for handling RevenueCat in-app purchases and subscriptions with real-time status tracking and paywall integration.
+A comprehensive Flutter package designed to **simplify pro user status checks** with automatic real-time handling. This package automatically manages and provides up-to-date status of whether a user is free or pro, handling subscription changes, renewals, and expirations seamlessly in the background.
+
+**🎯 Main Purpose:** Eliminate the complexity of manually tracking user subscription status. Once initialized, you get real-time updates when users subscribe to pro, when subscriptions expire, or when purchases are restored - all handled automatically without any manual intervention required.
 
 [![pub package](https://img.shields.io/pub/v/purchase_service.svg)](https://pub.dartlang.org/packages/purchase_service)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
 
+- 🎯 **Simplified Pro Status Checks** - Get instant, up-to-date user status (free/pro)
+- ⚡ **Automatic Status Management** - No manual handling needed for subscription changes
+- 🔄 **Real-time Updates** - Automatic subscription status tracking and live updates
 - 🚀 **Easy RevenueCat Integration** - Simple setup and configuration
 - 💳 **Purchase Management** - Handle purchases, restores, and offerings
 - 📱 **Paywall Support** - Built-in RevenueCat UI paywall integration
-- 🔄 **Real-time Updates** - Automatic subscription status tracking
 - 👤 **User Management** - Login/logout with user ID association
 - 📊 **Pro Status Tracking** - Smart pro user detection with live updates
 - 🎯 **Entitlement Checking** - Check specific or any active entitlements
 - 📡 **Stream-based** - Reactive programming with status streams
+
+## Why Use This Package?
+
+**Set it and forget it!** Once you initialize the purchase service, you get:
+
+✅ **Automatic Pro Status Tracking** - Always know if your user is free or pro without manual checks  
+✅ **Real-time Subscription Changes** - When users subscribe, renew, or cancel, status updates automatically  
+✅ **Zero Manual Handling** - No need to manually track subscription states or handle renewal logic  
+✅ **Instant Status Updates** - Get notified immediately when subscription status changes  
+✅ **Background Processing** - All subscription validations happen automatically in the background
+
+**Example:** User subscribes to pro → `isPro` automatically becomes `true` → Pro features unlock instantly  
+**Example:** User's subscription expires → `isPro` automatically becomes `false` → App gracefully handles downgrade
 
 ## Getting Started
 
@@ -44,6 +61,9 @@ flutter pub get
 ### Basic Setup
 
 ```dart
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:purchase_service/purchase_service.dart';
 
 class MyApp extends StatelessWidget {
@@ -61,7 +81,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final purchaseService = PurchasesService();
+  /// Purchases service instance
+  final PurchasesService purchasesService = PurchasesService();
 
   @override
   void initState() {
@@ -71,8 +92,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _initializePurchases() async {
     try {
-      await purchaseService.initialize(
-        apiKey: 'your_revenuecat_api_key',
+      // Get platform-specific API key
+      final purchasesApiKey = Platform.isIOS
+          ? dotenv.env['REVENUECAT_IOS_KEY'] ?? ''
+          : dotenv.env['REVENUECAT_ANDROID_KEY'] ?? '';
+
+      await purchasesService.initialize(
+        apiKey: purchasesApiKey,
+        observerMode: false, // Set to true for testing
         userId: 'optional_user_id', // Optional
       );
       print('Purchase service initialized');
@@ -87,6 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(title: Text('Purchase Service Demo')),
       body: Column(
         children: [
+          // Check pro status
+          Text(purchasesService.isPro ? 'PRO USER' : 'FREE USER'),
           // Your app content
         ],
       ),
@@ -95,27 +124,70 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 ```
 
-### Check Pro Status
+### Environment Setup (.env file)
+
+Create a `.env` file in your project root:
+
+```env
+# RevenueCat API Keys
+REVENUECAT_IOS_KEY=your_ios_api_key_here
+REVENUECAT_ANDROID_KEY=your_android_api_key_here
+```
+
+Don't forget to add to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  flutter_dotenv: ^5.1.0
+  purchase_service: ^1.0.0
+```
+
+And load the environment in your `main()`:
 
 ```dart
-// Simple pro status check
-bool isPro = purchaseService.isPro;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+  runApp(MyApp());
+}
+```
+
+### Check Pro Status (Automatic Updates)
+
+The beauty of this package is that you get real-time pro status without any manual work:
+
+```dart
+// Simple pro status check - always up-to-date automatically
+bool isPro = purchasesService.isPro;
 if (isPro) {
   print('User is pro!');
+  // Enable pro features automatically
 } else {
   print('User is free');
+  // Show free tier experience
 }
 
-// Listen to pro status changes in real-time
-purchaseService.proStatusStream.listen((isPro) {
+// Listen to pro status changes in real-time (automatic updates)
+purchasesService.proStatusStream.listen((isPro) {
   if (isPro) {
     print('User just became pro! 🎉');
-    // Enable pro features
+    // Pro features automatically enabled - no manual handling needed
+    _enableProFeatures();
   } else {
     print('User subscription expired');
-    // Disable pro features
+    // Automatically handle downgrade - no manual tracking needed
+    _showFreeTierMessage();
   }
 });
+
+// The package automatically handles:
+// ✅ New subscriptions
+// ✅ Subscription renewals
+// ✅ Subscription cancellations
+// ✅ Subscription expirations
+// ✅ Purchase restorations
+// ✅ Refunds and downgrades
 ```
 
 ### Present Paywall
@@ -123,7 +195,7 @@ purchaseService.proStatusStream.listen((isPro) {
 ```dart
 Future<void> showPaywall() async {
   try {
-    final result = await purchaseService.presentPaywallIfNeeded(
+    final result = await purchasesService.presentPaywallIfNeeded(
       entitlement: 'pro', // Your entitlement ID
       showCloseButton: true,
     );

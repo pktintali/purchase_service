@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:purchase_service/purchase_service.dart';
 import 'dart:async';
 
-void main() {
+// Note: For a complete setup, add flutter_dotenv to pubspec.yaml and load .env file
+// import 'dart:io';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+void main() async {
+  // Uncomment these lines when using flutter_dotenv:
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await dotenv.load(fileName: ".env");
   runApp(const PurchaseServiceExampleApp());
 }
 
@@ -28,6 +35,7 @@ class PurchaseExampleHomePage extends StatefulWidget {
 }
 
 class _PurchaseExampleHomePageState extends State<PurchaseExampleHomePage> {
+  /// Purchases service instance
   final PurchasesService _purchaseService = PurchasesService();
 
   // State variables
@@ -63,10 +71,20 @@ class _PurchaseExampleHomePageState extends State<PurchaseExampleHomePage> {
     });
 
     try {
-      // IMPORTANT: Replace with your actual RevenueCat API key
-      // Get this from your RevenueCat dashboard
+      // IMPORTANT: Use platform-specific API keys
+      // Replace with your actual RevenueCat API keys from .env file or constants
+
+      // Example with dotenv (recommended):
+      // final purchasesApiKey = Platform.isIOS
+      //     ? dotenv.env['REVENUECAT_IOS_KEY'] ?? ''
+      //     : dotenv.env['REVENUECAT_ANDROID_KEY'] ?? '';
+
+      // For this example, using placeholder - replace with your keys:
+      const purchasesApiKey = 'YOUR_PLATFORM_SPECIFIC_API_KEY_HERE';
+
       await _purchaseService.initialize(
-        apiKey: 'YOUR_REVENUECAT_API_KEY_HERE',
+        apiKey: purchasesApiKey,
+        observerMode: false, // Set to true for testing
         userId:
             'example_user_${DateTime.now().millisecondsSinceEpoch}', // Optional
       );
@@ -519,12 +537,17 @@ class _PurchaseExampleHomePageState extends State<PurchaseExampleHomePage> {
             const Text(
               '🔧 To make this example work:\n\n'
               '1. Create a RevenueCat account at revenuecat.com\n'
-              '2. Get your API key from the RevenueCat dashboard\n'
-              '3. Replace "YOUR_REVENUECAT_API_KEY_HERE" in the code\n'
-              '4. Create an entitlement called "pro" in your dashboard\n'
-              '5. Configure your products and offerings\n'
-              '6. Test with sandbox/test accounts\n\n'
-              '💡 This example will work in sandbox mode for testing',
+              '2. Get separate API keys for iOS and Android from RevenueCat dashboard\n'
+              '3. Create a .env file with:\n'
+              '   REVENUECAT_IOS_KEY=your_ios_key\n'
+              '   REVENUECAT_ANDROID_KEY=your_android_key\n'
+              '4. Add flutter_dotenv to pubspec.yaml\n'
+              '5. Use Platform.isIOS to get correct key\n'
+              '6. Create an entitlement called "pro" in your dashboard\n'
+              '7. Configure your products and offerings\n'
+              '8. Test with sandbox/test accounts\n\n'
+              '💡 Example shows purchasesService.isPro usage\n'
+              '📱 Use observerMode: true for testing',
               style: TextStyle(fontSize: 13),
             ),
           ],

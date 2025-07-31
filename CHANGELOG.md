@@ -1,3 +1,40 @@
+## 1.0.1
+
+### Documentation & Examples Update
+
+- 📝 **Enhanced Documentation**
+
+  - Updated README.md to clearly emphasize the package's main purpose: simplifying pro status checks with automatic real-time handling
+  - Added "Why Use This Package?" section highlighting the "set it and forget it" philosophy
+  - Enhanced feature descriptions to emphasize automation benefits
+
+- 🔧 **Corrected Usage Examples**
+
+  - Fixed all examples to show proper platform-specific API key usage (separate iOS/Android keys)
+  - Added comprehensive dotenv environment variable setup instructions
+  - Updated initialization patterns to use `Platform.isIOS` for correct key selection
+  - Enhanced error handling examples with platform-specific considerations
+
+- 📖 **Improved Setup Instructions**
+
+  - Added step-by-step environment configuration guide
+  - Updated security best practices (`.env` file usage, `.gitignore` recommendations)
+  - Enhanced troubleshooting section with environment variable issues
+  - Corrected example app documentation
+
+- ✨ **Code Examples Enhancement**
+  - Updated main README.md with production-ready patterns
+  - Fixed EXAMPLE.md with correct initialization code
+  - Updated example/main.dart with proper dotenv integration
+  - Enhanced example/README.md with complete setup workflow
+
+### Files Updated
+
+- `README.md` - Enhanced purpose description and corrected examples
+- `EXAMPLE.md` - Fixed initialization and error handling examples
+- `example/main.dart` - Updated to show platform-specific API key usage
+- `example/README.md` - Comprehensive setup and troubleshooting guide
+
 ## 1.0.0
 
 ### Initial Release

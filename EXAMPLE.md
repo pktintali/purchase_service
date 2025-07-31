@@ -441,14 +441,23 @@ class _PurchaseHomePageState extends State<PurchaseHomePage> {
 ### 1. Basic Initialization
 
 ```dart
+import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:purchase_service/purchase_service.dart';
 
 class PurchaseManager {
+  /// Purchases service instance
   final PurchasesService _purchaseService = PurchasesService();
 
   Future<void> initialize() async {
+    // Get platform-specific API key
+    final purchasesApiKey = Platform.isIOS
+        ? dotenv.env['REVENUECAT_IOS_KEY'] ?? ''
+        : dotenv.env['REVENUECAT_ANDROID_KEY'] ?? '';
+
     await _purchaseService.initialize(
-      apiKey: 'your_revenuecat_api_key',
+      apiKey: purchasesApiKey,
+      observerMode: false, // Set to true for testing
       userId: 'optional_user_id',
     );
   }
@@ -602,12 +611,21 @@ Future<void> purchaseSpecificProduct() async {
 
 ```dart
 class RobustPurchaseManager {
+  /// Purchases service instance
   final PurchasesService _purchaseService = PurchasesService();
 
   Future<bool> initializeWithRetry({int maxRetries = 3}) async {
     for (int i = 0; i < maxRetries; i++) {
       try {
-        await _purchaseService.initialize(apiKey: 'your_api_key');
+        // Get platform-specific API key
+        final purchasesApiKey = Platform.isIOS
+            ? dotenv.env['REVENUECAT_IOS_KEY'] ?? ''
+            : dotenv.env['REVENUECAT_ANDROID_KEY'] ?? '';
+
+        await _purchaseService.initialize(
+          apiKey: purchasesApiKey,
+          observerMode: false,
+        );
         return true;
       } catch (e) {
         if (i == maxRetries - 1) {
